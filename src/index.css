@@ -2,8 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LeetCode 风格的全局字体优化 */
+/* ===== 主题变量系统 ===== */
 @layer base {
+  :root {
+    /* 暗色主题（默认） */
+    --bg-primary: #050508;
+    --bg-secondary: #0a0a0f;
+    --bg-tertiary: #1a1a1f;
+    --bg-elevated: #1e1e1e;
+    --bg-panel: #282828;
+
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
+    --text-muted: rgba(255, 255, 255, 0.3);
+
+    --border-primary: #1e1e24;
+    --border-secondary: #333;
+
+    --accent-primary: #10b981;
+    --accent-hover: #059669;
+  }
+
+  .light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-elevated: #ffffff;
+    --bg-panel: #f8fafc;
+
+    --text-primary: rgba(15, 23, 42, 0.95);
+    --text-secondary: rgba(15, 23, 42, 0.7);
+    --text-tertiary: rgba(15, 23, 42, 0.5);
+    --text-muted: rgba(15, 23, 42, 0.3);
+
+    --border-primary: #e2e8f0;
+    --border-secondary: #cbd5e1;
+
+    --accent-primary: #059669;
+    --accent-hover: #047857;
+  }
+
   html {
     /* 字体平滑渲染 */
     -webkit-font-smoothing: antialiased;
@@ -12,6 +51,8 @@
     text-rendering: optimizeLegibility;
     /* 字体特性设置 */
     font-feature-settings: 'kern' 1;
+    /* 平滑主题切换 */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
@@ -21,8 +62,9 @@
     line-height: 1.6;
     /* 字母间距 */
     letter-spacing: 0.01em;
-    /* LeetCode 风格的默认文字颜色 - 更明亮 */
-    color: rgba(255, 255, 255, 0.92);
+    /* 使用主题变量 */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   /* 代码相关元素使用等宽字体 */
@@ -51,6 +93,49 @@
   /* 段落优化 */
   p {
     line-height: 1.7;
+  }
+}
+
+/* ===== 主题感知的工具类 ===== */
+@layer utilities {
+  .theme-bg-primary {
+    background-color: var(--bg-primary);
+  }
+
+  .theme-bg-secondary {
+    background-color: var(--bg-secondary);
+  }
+
+  .theme-bg-tertiary {
+    background-color: var(--bg-tertiary);
+  }
+
+  .theme-bg-elevated {
+    background-color: var(--bg-elevated);
+  }
+
+  .theme-bg-panel {
+    background-color: var(--bg-panel);
+  }
+
+  .theme-text-primary {
+    color: var(--text-primary);
+  }
+
+  .theme-text-secondary {
+    color: var(--text-secondary);
+  }
+
+  .theme-text-tertiary {
+    color: var(--text-tertiary);
+  }
+
+  .theme-text-muted {
+    color: var(--text-muted);
+  }
+
+  .theme-border {
+    border-color: var(--border-primary);
   }
 }
 
