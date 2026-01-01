@@ -72,7 +72,7 @@ const estimateTime = (baseTime: number, baseSize: number, currentSize: number, c
 async function runBenchmark(id: string, payload: BenchmarkPayload): Promise<void> {
     console.log('[Worker] runBenchmark started with id:', id, 'problemId:', payload.problemId);
     currentTaskId = id;
-    const { algorithms, sizes, iterations, warmupRuns, testDataGenerator, complexities } = payload;
+    const { algorithms, sizes, testDataGenerator, complexities } = payload; // Removed iterations, warmupRuns
 
     const results: BenchmarkResult[] = [];
     const algoNames = Object.keys(algorithms);
@@ -83,17 +83,17 @@ async function runBenchmark(id: string, payload: BenchmarkPayload): Promise<void
     const timesByAlgo: Record<string, number[]> = {};
 
     for (const algoName of algoNames) {
-        const algoCode = algorithms[algoName];
-        const complexity = complexities ? complexities[algoName] : 'O(n)'; // 默认为线性
+        const algoCode = algorithms[algoName] ?? '';
+        const complexity = complexities[algoName] || 'O(n)';
         timesByAlgo[algoName] = [];
 
         // 1. 实测最小 Size (Base Case)
         let baseTime = 0.001;
-        let baseSize = sizes[0];
+        let baseSize = sizes[0] ?? 100;
 
         try {
             // 只需要实测第一个点 (N=min)
-            const size = sizes[0];
+            const size = baseSize;
 
             // 报告进度
             if (currentTaskId !== id) return;
@@ -171,7 +171,7 @@ async function runBenchmark(id: string, payload: BenchmarkPayload): Promise<void
 
         // 2. 仿真剩余的所有点 (Simulation)
         for (let i = 1; i < sizes.length; i++) {
-            const size = sizes[i];
+            const size = sizes[i]!; // Non-null assertion
 
             if (currentTaskId !== id) return;
             currentStep++;
@@ -184,11 +184,12 @@ async function runBenchmark(id: string, payload: BenchmarkPayload): Promise<void
             simulatedTime *= jitter;
 
             // 确保单调递增 (不应小于前一个点)
-            if (simulatedTime < timesByAlgo[algoName][i - 1]) {
-                simulatedTime = timesByAlgo[algoName][i - 1] * 1.02; // 至少增加 2%
+            const prevTime = timesByAlgo[algoName]![i - 1]!; // Force non-null
+            if (simulatedTime < prevTime) {
+                simulatedTime = prevTime * 1.02; // 至少增加 2%
             }
 
-            timesByAlgo[algoName].push(simulatedTime);
+            timesByAlgo[algoName]!.push(simulatedTime);
 
             // 模拟极短暂的延迟，避免 UI 瞬间完成看起来太假
             // (虽然用户想要快，但太快可能会怀疑是假的) -> 算了，越快越好，用户只要图。
